@@ -13,5 +13,5 @@ def predict():
     return jsonify(prediction.tolist())  # Return the prediction as JSON
 
 if __name__ == '__main__':
-    model = joblib.load('C:\\Users\\Amin\\Desktop\\decision_tree_model.pkl')  # Load your trained model
+    model = joblib.load('C:\\Users\\amins\\Desktop\\random_forest_model.pkl')  # Load your trained model
     app.run(port=5000)  # Start the Flask app
