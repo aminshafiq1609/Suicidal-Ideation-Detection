@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/Shepherd576/Project/issues"
   },
-  "homepage": "https://github.com/Shepherd576/Project#readme"
+  "homepage": "https://github.com/Shepherd576/Project#readme",
+  "dependencies": {
+    "webextension-polyfill": "^0.10.0"
+  }
 }
