@@ -13,5 +13,5 @@ def predict():
     return jsonify(prediction.tolist())  # Return the prediction as JSON
 
 if __name__ == '__main__':
-    model = joblib.load('C:\\Users\\amins\\Desktop\\random_forest_model.pkl')  # Load your trained model
+    model = joblib.load('C:\\Users\\amins\\Desktop\\Project\\model\\random_forest_model.pkl')  # Load your trained model
     app.run(port=5000)  # Start the Flask appcurl -X POST -H "Content-Type: application/json" -d '{"feature1": value1, "feature2": value2, ...}' http://127.0.0.1:5000/predict
