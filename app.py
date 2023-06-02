@@ -21,6 +21,10 @@ sia = SentimentIntensityAnalyzer()
 # Initialize a StandardScaler
 scaler = StandardScaler()
 
+# Load the fitted StandardScaler
+scaler = joblib.load('C:\\Users\\amins\\Desktop\\Project\\scaler.pkl')
+
+
 def clean_text(text):
     # Your existing clean_text function here
     # Convert to lowercase
