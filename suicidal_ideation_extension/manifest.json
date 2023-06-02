@@ -12,7 +12,8 @@
     "storage"
   ],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "persistent": false
   },
   "action": {
     "default_popup": "popup.html",
