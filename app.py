@@ -28,7 +28,27 @@ def clean_text(text):
     porter = nltk.PorterStemmer()
     tokens = [porter.stem(token) for token in tokens]
 
-    return tokens
+    # Convert tokens into a single string
+    cleaned_text = ' '.join(tokens)
+
+    return cleaned_text
+
+def preprocess_data(df):
+    # Extract emotion features using VADER sentiment analysis
+    sia = SentimentIntensityAnalyzer()
+    df['sentiment_scores'] = df['Text'].apply(lambda x: sia.polarity_scores(' '.join(x)))
+    df['compound'] = df['sentiment_scores'].apply(lambda x: x['compound'])
+
+    # Extract statistical features
+    df['text_length'] = df['Text'].apply(len)
+    df['average_word_length'] = df['Text'].apply(lambda x: np.mean([len(word) for word in x]) if x else 0)
+
+    # Combine emotion and statistical features into a single DataFrame
+    feature_df = df[['compound', 'text_length', 'average_word_length']]
+
+    # Standardize features using StandardScaler
+    scaler = StandardScaler()
+    X = scaler.fit_transform(feature_df)
 
 @app.route('/predict', methods=['POST'])
 def predict():
