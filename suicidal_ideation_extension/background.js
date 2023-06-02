@@ -1,10 +1,15 @@
-// Listen for messages from the extension button
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    // Check if the message is to show the popup
-    if (request.message === 'showPopup') {
-      // Display the popup
-      chrome.browserAction.setPopup({ popup: 'popup.html' });
-      chrome.browserAction.openPopup();
+chrome.runtime.onInstalled.addListener(function() {
+    console.log('Extension installed');
+  });
+  
+  chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+    if (request.message === 'showHotlines') {
+      console.log('Display hotlines');
+      // You can update the DOM to display the hotlines or perform any other desired action
+    } else if (request.message === 'revertDisplay') {
+      console.log('Revert to default display');
+      // You can revert the DOM to the default display or perform any other desired action
     }
   });
+  
   
