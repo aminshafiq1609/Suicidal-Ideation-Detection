@@ -6,10 +6,23 @@ import nltk
 import re
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
+import numpy as np
+from nltk.sentiment import SentimentIntensityAnalyzer
+from sklearn.preprocessing import StandardScaler
 
 app = Flask(__name__)
 
+# Load your trained model
+model = joblib.load('C:\\Users\\amins\\Desktop\\Project\\random_forest_model.pkl')
+
+# Initialize a SentimentIntensityAnalyzer
+sia = SentimentIntensityAnalyzer()
+
+# Initialize a StandardScaler
+scaler = StandardScaler()
+
 def clean_text(text):
+    # Your existing clean_text function here
     # Convert to lowercase
     text = text.lower()
 
@@ -33,36 +46,46 @@ def clean_text(text):
 
     return cleaned_text
 
-def preprocess_data(df):
-    # Extract emotion features using VADER sentiment analysis
-    sia = SentimentIntensityAnalyzer()
-    df['sentiment_scores'] = df['Text'].apply(lambda x: sia.polarity_scores(' '.join(x)))
-    df['compound'] = df['sentiment_scores'].apply(lambda x: x['compound'])
+def preprocess_text(text):
+    # Apply the clean_text function
+    cleaned_text = clean_text(text)
+
+    # Extract emotion features
+    sentiment_scores = sia.polarity_scores(cleaned_text)
+    compound = sentiment_scores['compound']
 
     # Extract statistical features
-    df['text_length'] = df['Text'].apply(len)
-    df['average_word_length'] = df['Text'].apply(lambda x: np.mean([len(word) for word in x]) if x else 0)
+    text_length = len(cleaned_text)
+    average_word_length = np.mean([len(word) for word in cleaned_text.split()]) if cleaned_text else 0
 
-    # Combine emotion and statistical features into a single DataFrame
-    feature_df = df[['compound', 'text_length', 'average_word_length']]
+    # Create a DataFrame with the features
+    feature_df = pd.DataFrame({
+        'compound': [compound],
+        'text_length': [text_length],
+        'average_word_length': [average_word_length]
+    })
 
-    # Standardize features using StandardScaler
-    scaler = StandardScaler()
-    X = scaler.fit_transform(feature_df)
+    # Standardize the features
+    X = scaler.transform(feature_df)
+
+    return X
 
 @app.route('/predict', methods=['POST'])
+
 def predict():
     data = request.json  # Get the JSON data sent to this endpoint
-    df = pd.DataFrame(data, index=[0])  # Convert data to a pandas DataFrame
+    text = data['Text']  # Extract the text from the data
+
+    # Preprocess the text
+    X = preprocess_text(text)
     
-    # Preprocess the "Text" column
-    df['Text'] = df['Text'].apply(clean_text)
+    # Predict using your trained model
+    prediction = model.predict(X)
     
-    prediction = model.predict(df)  # Predict using your trained model
     return jsonify(prediction.tolist())  # Return the prediction as JSON
 
 if __name__ == '__main__':
-    model = joblib.load('C:\\Users\\amins\\Desktop\\Project\\random_forest_model.pkl')  # Load your trained model
     app.run(port=5000)  # Start the Flask app
+
 
 
